@@ -12,6 +12,12 @@ from typing import Iterable, List, Optional
 from urllib import error, request
 
 
+DEFAULT_VSTAR_SCRAPE_URLS = [
+    "https://vstarvolleyball.com/?page_id=409&scope=current",
+    "https://vstarvolleyball.com/?page_id=409&scope=past",
+]
+
+
 @dataclass
 class TournamentResult:
     date: dt.date
@@ -421,7 +427,10 @@ def main():
         "--vstar-scrape",
         action="append",
         metavar="URL",
-        help="One or more VSTAR pages to scrape for results (comma-separated or repeated).",
+        help=(
+            "One or more VSTAR pages to scrape for results (comma-separated or repeated). "
+            "Use 'default' to scrape the current and past listings."
+        ),
     )
 
     parser.add_argument(
@@ -438,7 +447,17 @@ def main():
     if args.vstar_scrape:
         scrape_urls: list[str] = []
         for entry in args.vstar_scrape:
-            scrape_urls.extend(url.strip() for url in entry.split(",") if url.strip())
+            for token in entry.split(","):
+                token = token.strip()
+                if not token:
+                    continue
+                if token.lower() in {"default", "current_and_past"}:
+                    scrape_urls.extend(DEFAULT_VSTAR_SCRAPE_URLS)
+                else:
+                    scrape_urls.append(token)
+
+        if not scrape_urls:
+            scrape_urls = list(DEFAULT_VSTAR_SCRAPE_URLS)
 
         try:
             results = scrape_vstar_pages(scrape_urls, args.data)

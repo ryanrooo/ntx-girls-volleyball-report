@@ -12,10 +12,13 @@ This repository provides a lightweight script to turn weekend tournament results
 Pass one or more public VSTAR pages that show tournament results. The scraper will find HTML tables, convert them to the expected CSV layout, and cache them locally:
 
 ```bash
-python report.py --vstar-scrape https://vstarvolleyball.com/results --data data/tournaments.csv
+python report.py --vstar-scrape "https://vstarvolleyball.com/?page_id=409&scope=current,https://vstarvolleyball.com/?page_id=409&scope=past" --data data/tournaments.csv
 
 # Multiple pages can be supplied by repeating the flag or using commas
-python report.py --vstar-scrape https://vstarvolleyball.com/results,https://vstarvolleyball.com/past-events
+python report.py --vstar-scrape https://vstarvolleyball.com/?page_id=409&scope=current --vstar-scrape https://vstarvolleyball.com/?page_id=409&scope=past
+
+# Use the built-in defaults for the current and past result pages
+python report.py --vstar-scrape default --data data/tournaments.csv
 ```
 
 Notes:
